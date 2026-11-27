@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#133a30">
+  <meta name="description" content="A private multilingual shop ledger demo. Speak or type, review, and confirm simulated entries.">
+  <title>Dukaan Voice AI</title>
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./app.mjs"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="shell topbar">
+      <div class="brand"><span class="brand-icon" aria-hidden="true">D</span><span>Dukaan <b>Voice AI</b></span></div>
+      <span class="private"><span class="dot"></span> Private demo</span>
+    </div>
+  </header>
+  <main class="shell">
+    <div class="intro">
+      <div><h1>Your shop ledger</h1><p>Speak or type an entry, review it, then confirm.</p></div>
+      <time id="today" class="today"></time>
+    </div>
+
+    <div class="dashboard">
+      <div class="stack">
+        <section class="card command-card" aria-labelledby="command-title">
+          <div class="card-top">
+            <div class="command-heading"><span class="sound-mark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><h2 id="command-title">Talk to Dukaan</h2></div>
+            <label class="language"><span class="sr-only">Input language</span><select id="language">
+              <option value="hi-IN">हिंदी</option><option value="te-IN">తెలుగు</option><option value="en-IN">English</option><option value="ta-IN">தமிழ்</option><option value="kn-IN">ಕನ್ನಡ</option><option value="mr-IN">मराठी</option>
+            </select></label>
+          </div>
+          <form id="command-form">
+            <label class="sr-only" for="command">Transaction or ledger question</label>
+            <textarea id="command" rows="4" maxlength="1000" spellcheck="false" aria-describedby="command-help"></textarea>
+            <div class="command-actions">
+              <button type="button" id="mic" class="button secondary" aria-pressed="false"><span class="mic-icon" aria-hidden="true"></span><span id="mic-text">Speak</span></button>
+              <button type="submit" class="button primary">Interpret command</button>
+            </div>
+          </form>
+          <p id="command-help" class="muted help">Type or dictate with your keyboard or Wispr Flow.</p>
+          <p id="status" class="notice" role="status" hidden></p>
+          <div class="examples">
+            <h3>Try an example</h3>
+            <div class="example-list" id="examples"></div>
+          </div>
+        </section>
+
+        <section id="answer" class="card result-card" aria-labelledby="answer-title" hidden>
+          <h2 id="answer-title" tabindex="-1">Ledger answer</h2><p id="answer-text"></p>
+        </section>
+        <section id="statement" class="card result-card" aria-labelledby="statement-title" hidden>
+          <div class="card-top"><h2 id="statement-title" tabindex="-1">Customer statement</h2><span class="tag">Simulated</span></div>
+          <p id="statement-customer" class="statement-name"></p>
+          <p id="statement-range" class="muted"></p>
+          <div class="statement-controls">
+            <label for="statement-period">Period</label>
+            <select id="statement-period">
+              <option value="all">All entries through today</option>
+              <option value="previous">Previous month</option>
+              <option value="current">This month</option>
+            </select>
+            <button id="print-statement" type="button" class="button primary">Print or save PDF</button>
+          </div>
+          <dl id="statement-totals" class="statement-totals"></dl>
+          <div class="statement-table">
+            <table aria-label="Statement transactions">
+              <thead><tr><th scope="col">Date and time (IST)</th><th scope="col">Credit</th><th scope="col">Payment</th><th scope="col">Balance</th></tr></thead>
+              <tbody id="statement-entries"></tbody>
+            </table>
+          </div>
+        </section>
+        <section id="review" class="card result-card" aria-labelledby="review-title" hidden>
+          <div class="card-top"><h2 id="review-title" tabindex="-1">Review entries</h2><span id="review-count" class="tag"></span></div>
+          <p class="muted section-note">Check each entry before saving it to this simulated ledger. Dates and times use IST.</p>
+          <form id="review-form">
+            <div id="drafts"></div>
+            <p id="review-status" class="notice" role="status" hidden></p>
+            <div class="review-actions">
+              <button type="button" id="discard" class="button secondary">Discard</button>
+              <button type="button" id="confirm" class="button primary">Confirm simulated update</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="card" aria-labelledby="activity-title">
+          <div class="card-top"><h2 id="activity-title">Recent activity</h2><span class="tag">IST</span></div>
+          <ul id="activity" class="ledger-list"></ul>
+        </section>
+      </div>
+
+      <aside class="stack" aria-label="Simulated ledger overview">
+        <section class="snapshot card" aria-labelledby="snapshot-title">
+          <div class="card-top"><h2 id="snapshot-title">Ledger snapshot</h2><span class="tag">Simulated</span></div>
+          <div class="outstanding"><span>Total outstanding</span><strong id="outstanding">₹0</strong></div>
+          <div class="metrics">
+            <div><span>Credit today</span><strong id="credit">₹0</strong></div>
+            <div><span>Collected today</span><strong id="payment">₹0</strong></div>
+          </div>
+        </section>
+        <section class="card" aria-labelledby="customer-title">
+          <div class="card-top"><h2 id="customer-title">Customer balances</h2><span id="customer-count" class="tag"></span></div>
+          <ul id="customers" class="ledger-list"></ul>
+        </section>
+        <section class="card" aria-labelledby="messages-title">
+          <div class="card-top"><h2 id="messages-title">WhatsApp message previews</h2><span class="tag">Simulated</span></div>
+          <ul id="messages" class="ledger-list message-list"></ul>
+          <p id="message-status" class="notice" role="status" hidden></p>
+        </section>
+        <section class="card data-card" aria-labelledby="data-title">
+          <h2 id="data-title">Demo data</h2>
+          <p class="muted">Confirmed entries stay in this browser. Import a backup from the original Dukaan MVP or this demo.</p>
+          <div class="backup-actions">
+            <button type="button" class="button secondary" id="import-button">Import backup</button>
+            <button type="button" class="button secondary" id="export-button">Export backup</button>
+            <input type="file" id="import-file" accept=".json,application/json" hidden>
+          </div>
+          <div id="import-review" hidden>
+            <p id="import-summary"></p>
+            <div class="backup-actions"><button type="button" class="button secondary" id="import-cancel">Cancel</button><button type="button" class="button primary" id="import-confirm">Confirm demo import</button></div>
+          </div>
+          <p id="backup-status" class="notice" role="status" hidden></p>
+        </section>
+      </aside>
+    </div>
+    <footer><span>Dukaan Voice AI · Scaler × Wispr Flow hackathon</span><span>All ledger activity is simulated.</span></footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,6 @@
+.env
+.env.*
+*.pem
+*.key
+dukaan-demo-*.json
+.DS_Store
